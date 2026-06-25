@@ -31,6 +31,8 @@ public final class ToolCallbacks {
 	}
 
 	public static ToolCallback[] from(Object... sources) {
+		// 将任何对象包装成 ToolCallbackProvider
+		// 然后，获取其中的 ToolCallback(具备非常复杂的解析)
 		return MethodToolCallbackProvider.builder().toolObjects(sources).build().getToolCallbacks();
 	}
 

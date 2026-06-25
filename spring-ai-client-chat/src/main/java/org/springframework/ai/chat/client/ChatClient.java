@@ -174,6 +174,9 @@ public interface ChatClient {
 		@Nullable
 		ChatResponse chatResponse();
 
+		/**
+		 * 直接返回字符串
+		 */
 		@Nullable
 		String content();
 
@@ -191,6 +194,9 @@ public interface ChatClient {
 
 		Flux<ChatResponse> chatResponse();
 
+		/**
+		 * 返回流式的字符串
+		 */
 		Flux<String> content();
 
 	}

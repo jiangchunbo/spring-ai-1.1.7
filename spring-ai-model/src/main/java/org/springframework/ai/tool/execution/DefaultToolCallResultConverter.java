@@ -47,6 +47,8 @@ public final class DefaultToolCallResultConverter implements ToolCallResultConve
 			logger.debug("The tool has no return type. Converting to conventional response.");
 			return JsonParser.toJson("Done");
 		}
+
+		// 返回值可以是图片
 		if (result instanceof RenderedImage) {
 			final var buf = new ByteArrayOutputStream(1024 * 4);
 			try {

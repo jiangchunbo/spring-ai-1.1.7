@@ -87,14 +87,14 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 				.of(ReflectionUtils.getDeclaredMethods(
 						AopUtils.isAopProxy(toolObject) ? AopUtils.getTargetClass(toolObject) : toolObject.getClass()))
 				.filter(this::isToolAnnotatedMethod)
-				.filter(toolMethod -> !isFunctionalType(toolMethod))
+				.filter(toolMethod -> !isFunctionalType(toolMethod)) // 排除返回函数对象
 				.filter(ReflectionUtils.USER_DECLARED_METHODS::matches)
-				.map(toolMethod -> MethodToolCallback.builder()
-					.toolDefinition(ToolDefinitions.from(toolMethod))
+				.map(toolMethod -> MethodToolCallback.builder() // 构造 MethodToolCallback
+					.toolDefinition(ToolDefinitions.from(toolMethod)) // 工具的定义，比如工具的名字、参数、返回
 					.toolMetadata(ToolMetadata.from(toolMethod))
 					.toolMethod(toolMethod)
-					.toolObject(toolObject)
-					.toolCallResultConverter(ToolUtils.getToolCallResultConverter(toolMethod))
+					.toolObject(toolObject) // 最终调用一定通过某个方法的某个 method
+					.toolCallResultConverter(ToolUtils.getToolCallResultConverter(toolMethod)) // 返回值转换器，必须要得到 String
 					.build())
 				.toArray(ToolCallback[]::new))
 			.flatMap(Stream::of)

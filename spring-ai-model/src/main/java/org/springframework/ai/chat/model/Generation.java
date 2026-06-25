@@ -24,6 +24,8 @@ import org.springframework.ai.model.ModelResult;
 
 /**
  * Represents a response returned by the AI.
+ * <p>
+ * 表示 AI 模型的输出
  */
 public class Generation implements ModelResult<AssistantMessage> {
 
@@ -31,6 +33,9 @@ public class Generation implements ModelResult<AssistantMessage> {
 
 	private ChatGenerationMetadata chatGenerationMetadata;
 
+	/**
+	 * 从构造函数就可以看出，对于 AI 的输出，总是助手消息。
+	 */
 	public Generation(AssistantMessage assistantMessage) {
 		this(assistantMessage, ChatGenerationMetadata.NULL);
 	}

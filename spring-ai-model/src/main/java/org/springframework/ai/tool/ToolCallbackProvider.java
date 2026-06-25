@@ -20,6 +20,8 @@ import java.util.List;
 
 /**
  * Provides {@link ToolCallback} instances for tools defined in different sources.
+ * <p>
+ * 从不同的来源提供 ToolCallback
  *
  * @author Thomas Vitale
  * @since 1.0.0

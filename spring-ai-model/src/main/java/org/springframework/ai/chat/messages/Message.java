@@ -31,6 +31,9 @@ public interface Message extends Content {
 
 	/**
 	 * Get the message type.
+	 * <p>
+	 * 获取消息类型。系统消息、用户消息、助手消息？
+	 *
 	 * @return the message type
 	 */
 	MessageType getMessageType();

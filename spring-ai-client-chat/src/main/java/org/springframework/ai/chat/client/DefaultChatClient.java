@@ -443,6 +443,8 @@ public class DefaultChatClient implements ChatClient {
 			}
 
 			var chatResponse = doGetObservableChatClientResponse(this.request).chatResponse();
+
+			// 获取 AI 模型返回的字符串
 			var responseContent = getContentFromChatResponse(chatResponse);
 			if (responseContent == null) {
 				return new ResponseEntity<>(chatResponse, null);

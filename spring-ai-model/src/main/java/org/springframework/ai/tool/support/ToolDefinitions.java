@@ -47,15 +47,16 @@ public final class ToolDefinitions {
 	public static DefaultToolDefinition.Builder builder(Method method) {
 		Assert.notNull(method, "method cannot be null");
 		return DefaultToolDefinition.builder()
-			.name(ToolUtils.getToolName(method))
-			.description(ToolUtils.getToolDescription(method))
-			.inputSchema(JsonSchemaGenerator.generateForMethodInput(method));
+			.name(ToolUtils.getToolName(method)) // 一般就是注解的 name
+			.description(ToolUtils.getToolDescription(method)) // 一般就是注解的 description
+			.inputSchema(JsonSchemaGenerator.generateForMethodInput(method)); //
 	}
 
 	/**
 	 * Create a default {@link ToolDefinition} instance from a {@link Method}.
 	 */
 	public static ToolDefinition from(Method method) {
+		// 调用上面的方法，得到一个 Builder 对象
 		return builder(method).build();
 	}
 

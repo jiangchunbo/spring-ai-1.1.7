@@ -124,6 +124,9 @@ public class MarkdownDocumentReader implements DocumentReader {
 		this.parser = Parser.builder().build();
 	}
 
+	/**
+	 * 工具方法，将字符串资源表现形式解析为 N 个 Resource 对象
+	 */
 	private static List<Resource> resolveResources(String markdownResources) {
 		try {
 			return List.of(new PathMatchingResourcePatternResolver().getResources(markdownResources));
@@ -141,11 +144,14 @@ public class MarkdownDocumentReader implements DocumentReader {
 	public List<Document> get() {
 		List<Document> documents = new ArrayList<>();
 		for (Resource markdownResource : this.markdownResources) {
+			// 创建一个内部类，叫文档拜访器(org.commonmark.node.Visitor)，估计可以递归遍历 markdown 最后得到一个 documents 吧
 			DocumentVisitor documentVisitor = new DocumentVisitor(this.config);
 			try (var input = markdownResource.getInputStream()) {
 				Node node = this.parser.parseReader(new InputStreamReader(input));
 
+				// 遍历，org.commonmark.node.Visitor 会在每个插入点执行逻辑
 				node.accept(documentVisitor);
+
 				documents.addAll(documentVisitor.getDocuments());
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -173,6 +179,8 @@ public class MarkdownDocumentReader implements DocumentReader {
 
 		/**
 		 * Visits the document node and initializes the current document builder.
+		 * <p>
+		 * 整个 markdown 的根节点，初始化 currentDocumentBuilder(Document.Builder)
 		 */
 		@Override
 		public void visit(org.commonmark.node.Document document) {
@@ -180,6 +188,10 @@ public class MarkdownDocumentReader implements DocumentReader {
 			super.visit(document);
 		}
 
+		/**
+		 * #/## 标题
+		 * @param heading
+		 */
 		@Override
 		public void visit(Heading heading) {
 			buildAndFlush();
@@ -214,11 +226,15 @@ public class MarkdownDocumentReader implements DocumentReader {
 
 		@Override
 		public void visit(BlockQuote blockQuote) {
+			// 如果不把引用块并入前面的正文，那么正文到此为止
 			if (!this.config.includeBlockquote) {
 				buildAndFlush();
 			}
 
+			// 如果存在段落，那么增加一个空格
 			translateLineBreakToSpace();
+
+			// 记录 metadata
 			this.currentDocumentBuilder.metadata("category", "blockquote");
 			super.visit(blockQuote);
 		}
@@ -232,6 +248,7 @@ public class MarkdownDocumentReader implements DocumentReader {
 
 		@Override
 		public void visit(FencedCodeBlock fencedCodeBlock) {
+			// 如果不把代码块并入前面，那么就到此位置构建 Document
 			if (!this.config.includeCodeBlock) {
 				buildAndFlush();
 			}
@@ -248,7 +265,9 @@ public class MarkdownDocumentReader implements DocumentReader {
 
 		@Override
 		public void visit(Text text) {
+			// 一般 Heading 之后紧跟着 Text 可以读取到标题文字
 			if (text.getParent() instanceof Heading heading) {
+				// 添加了两个 metadata category + title
 				this.currentDocumentBuilder.metadata("category", "header_%d".formatted(heading.getLevel()))
 						.metadata("title", text.getLiteral());
 			} else {
@@ -278,6 +297,8 @@ public class MarkdownDocumentReader implements DocumentReader {
 
 				this.currentParagraphs.clear();
 			}
+
+			// 重新初始化一个 Document
 			this.currentDocumentBuilder = Document.builder();
 		}
 

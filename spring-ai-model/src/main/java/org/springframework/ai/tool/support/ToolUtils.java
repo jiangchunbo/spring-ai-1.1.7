@@ -60,10 +60,12 @@ public final class ToolUtils {
 		String toolName;
 		if (tool == null) {
 			toolName = method.getName();
-		}
-		else {
+		} else {
+			// 获取注解 @Tool 的 name 属性
 			toolName = StringUtils.hasText(tool.name()) ? tool.name() : method.getName();
 		}
+
+		// 校验工具的名字，不能为空，只接受特定字符
 		validateToolName(toolName);
 		return toolName;
 	}
@@ -97,8 +99,7 @@ public final class ToolUtils {
 		var type = tool.resultConverter();
 		try {
 			return type.getDeclaredConstructor().newInstance();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new IllegalArgumentException("Failed to instantiate ToolCallResultConverter: " + type, e);
 		}
 	}
@@ -106,13 +107,13 @@ public final class ToolUtils {
 	public static List<String> getDuplicateToolNames(List<ToolCallback> toolCallbacks) {
 		Assert.notNull(toolCallbacks, "toolCallbacks cannot be null");
 		return toolCallbacks.stream()
-			.collect(Collectors.groupingBy(toolCallback -> toolCallback.getToolDefinition().name(),
-					Collectors.counting()))
-			.entrySet()
-			.stream()
-			.filter(entry -> entry.getValue() > 1)
-			.map(Map.Entry::getKey)
-			.collect(Collectors.toList());
+				.collect(Collectors.groupingBy(toolCallback -> toolCallback.getToolDefinition().name(),
+						Collectors.counting()))
+				.entrySet()
+				.stream()
+				.filter(entry -> entry.getValue() > 1)
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 	}
 
 	public static List<String> getDuplicateToolNames(ToolCallback... toolCallbacks) {
@@ -123,6 +124,7 @@ public final class ToolUtils {
 	/**
 	 * Validates that a tool name follows recommended naming conventions. Logs a warning
 	 * if the tool name contains characters that may not be compatible with some LLMs.
+	 *
 	 * @param toolName the tool name to validate
 	 */
 	private static void validateToolName(String toolName) {

@@ -136,6 +136,8 @@ public final class JsonSchemaGenerator {
 				// outside the model interaction flow.
 				continue;
 			}
+
+			// 方法参数是否是必须的
 			if (isMethodParameterRequired(method, i)) {
 				required.add(parameterName);
 			}
